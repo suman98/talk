@@ -8,13 +8,13 @@ return [
     ],
     'broadcast' => [
         'enable' => false,
-        'app_name' => env('PUSHER_APP_NAME'),
+        'app_name' => 'your-app-name',
         'pusher' => [
-            'app_id' => env('PUSHER_APP_ID'),
-            'app_key' => env('PUSHER_APP_KEY'),
-            'app_secret' => env('PUSHER_APP_SECRET'),
+            'app_id' => '',
+            'app_key' => '',
+            'app_secret' => '',
             'options' => [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => 'ap1',
                 'encrypted' => true
             ]
         ],

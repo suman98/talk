@@ -235,6 +235,42 @@ class Talk
      *
      * @return \Nahid\Talk\Messages\Message|bool
      */
+
+        protected function makeMessageWithAttachment($conversationId, $message,$attachment)
+    {
+
+        if($attachment['attachment']){
+            $image = $attachment['attachment'];
+            $destinationPath =public_path('/user_message/');
+            if(!\File::isDirectory($destinationPath)){
+                \File::makeDirectory($destinationPath, 0777, true, true);
+            }
+            list($type, $data) = explode(';', $data);
+            list(, $data)      = explode(',', $data);
+            $data = base64_decode($data);
+            $img_name = time()."".rand().".".$attachment['extension'];
+
+            file_put_contents($destinationPath.$img_name.'__', base64_decode($image));
+
+            $attachment['attachment'] = '/user_message/'.$img_name.'__';
+        }
+       
+        $message = $this->message->create([
+            'message' => $message,
+            'conversation_id' => $conversationId,
+            'user_id' => $this->authUserId,
+            'is_seen' => 0,
+            'attachment'=>$attachment['attachment'],
+            'att_type'=>$attachment['att_type'],
+            'file_name'=>$attachment['file_name'],
+        ]);
+
+        $message->conversation->touch();
+
+        $this->broadcast->transmission($message);
+
+        return $message;
+    }
     public function sendMessage($conversatonId, $message)
     {
         if ($conversatonId && $message) {
@@ -256,16 +292,16 @@ class Talk
      *
      * @return \Nahid\Talk\Messages\Message
      */
-    public function sendMessageByUserId($receiverId, $message)
+     public function sendMessageByUserId($receiverId, $message,$attachment)
     {
         if ($conversationId = $this->isConversationExists($receiverId)) {
-            $message = $this->makeMessage($conversationId, $message);
+            $message = $this->makeMessageWithAttachment($conversationId, $message,$attachment);
 
             return $message;
         }
 
         $convId = $this->newConversation($receiverId);
-        $message = $this->makeMessage($convId, $message);
+        $message = $this->makeMessageWithAttachment($convId, $message,$attachment);
 
         return $message;
     }

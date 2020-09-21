@@ -16,6 +16,7 @@ class Message extends Model implements HtmlStringInterface
 
     protected $appends = ['humans_time'];
 
+    
     public $fillable = [
         'message',
         'is_seen',
@@ -23,8 +24,10 @@ class Message extends Model implements HtmlStringInterface
         'deleted_from_receiver',
         'user_id',
         'conversation_id',
+        'attachment',
+        'att_type',
+        'file_name',
     ];
-
     /*
      * make dynamic attribute for human readable time
      *
@@ -59,7 +62,7 @@ class Message extends Model implements HtmlStringInterface
             config('talk.user.model', 'App\User'),
             config('talk.user.foreignKey'),
             config('talk.user.ownerKey')
-        );
+        )->select(['id','username','first_name','last_name']);
     }
 
     /*
